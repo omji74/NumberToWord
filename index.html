@@ -35,10 +35,31 @@
             padding: 15px;
             border-left: 5px solid #3498db;
             background: #eef2f3;
+            position: relative;
         }
-        .label { font-weight: bold; color: #7f8c8d; font-size: 14px; display: block; margin-bottom: 5px; }
-        .output { font-size: 20px; color: #2c3e50; margin-bottom: 15px; }
+        .label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .label { font-weight: bold; color: #7f8c8d; font-size: 14px; }
+        .output { font-size: 20px; color: #2c3e50; margin-bottom: 15px; min-height: 24px; }
         .hindi { font-family: 'Arial Unicode MS', sans-serif; }
+        
+        /* Sound Button Style */
+        .speak-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+        .speak-btn:hover { background: #2980b9; }
+        .speak-btn:disabled { background: #bdc3c7; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -48,10 +69,16 @@
     <input type="number" id="numberInput" placeholder="Type a number (e.g., 23456)" oninput="convert()">
 
     <div class="result-box">
-        <span class="label">HINDI (हिन्दी)</span>
+        <div class="label-container">
+            <span class="label">HINDI (हिन्दी)</span>
+            <button class="speak-btn" onclick="speak('hindiOutput', 'hi-IN')">🔊 Listen</button>
+        </div>
         <div id="hindiOutput" class="output hindi">—</div>
 
-        <span class="label">ENGLISH</span>
+        <div class="label-container">
+            <span class="label">ENGLISH</span>
+            <button class="speak-btn" onclick="speak('englishOutput', 'en-US')">🔊 Listen</button>
+        </div>
         <div id="englishOutput" class="output">—</div>
     </div>
 </div>
@@ -125,14 +152,31 @@
 
     function convert() {
         const val = document.getElementById("numberInput").value;
+        const hOut = document.getElementById("hindiOutput");
+        const eOut = document.getElementById("englishOutput");
+
         if (val === "") {
-            document.getElementById("hindiOutput").innerText = "—";
-            document.getElementById("englishOutput").innerText = "—";
+            hOut.innerText = "—";
+            eOut.innerText = "—";
             return;
         }
         const n = parseInt(val);
-        document.getElementById("hindiOutput").innerText = numToHindi(n);
-        document.getElementById("englishOutput").innerText = numToEnglish(n);
+        hOut.innerText = numToHindi(n);
+        eOut.innerText = numToEnglish(n);
+    }
+
+    // New Voice Function
+    function speak(elementId, lang) {
+        const text = document.getElementById(elementId).innerText;
+        if (text === "—") return;
+
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.rate = 0.9; // Slightly slower for clarity
+        window.speechSynthesis.speak(utterance);
     }
 </script>
 

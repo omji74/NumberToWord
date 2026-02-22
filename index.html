@@ -100,6 +100,11 @@
     function numToHindi(num) {
         if (num == 0) return hindiWords[0];
         let str = "";
+          // Arab (100 Crore = 1 Arab)
+        if (num >= 1000000000) {
+            str += numToHindi(Math.floor(num / 1000000000)) + " अरब ";
+            num %= 1000000000;
+        }
         if (num >= 10000000) {
             str += numToHindi(Math.floor(num / 10000000)) + " करोड़ ";
             num %= 10000000;
